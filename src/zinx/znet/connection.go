@@ -13,14 +13,14 @@ type Connection struct {
 	Conn *net.TCPConn
 	// 连接状态
 	isClosed bool
-	// 连接处理业务的函数
-	handler ziface.HandlerFunc
+	// 处理器
+	Router ziface.IRouter
 	// TODO 处理布尔值的通道 (goroutine)
 	ExitChan chan bool
 }
 
 func (conn *Connection) StartConn() {
-	fmt.Println("Conn Start.. ConnID", conn.ConnID)
+	fmt.Println("Conn Start... ConnID", conn.ConnID)
 	// 1. 执行读取函数
 	go conn.ReadConn()
 	// 2. 执行写入函数
@@ -42,7 +42,8 @@ func (conn *Connection) StopConn() {
 }
 
 func (conn *Connection) GetTCPConn() *net.TCPConn {
-	return conn.GetTCPConn()
+	// 注: 不要写成递归调用
+	return conn.Conn
 }
 
 func (conn *Connection) GetConnID() uint32 {
@@ -65,16 +66,22 @@ func (conn *Connection) ReadConn() {
 	// 2. 读取数据
 	for {
 		buf := make([]byte, 512)
-		length, err := conn.Conn.Read(buf)
+		_, err := conn.Conn.Read(buf)
 		if err != nil {
 			fmt.Println("Reader Goroutine read buf err", err)
-			continue
+			return
 		}
-		// 3. 处理数据
-		if err := conn.handler(conn.Conn, buf, length); err != nil {
-			fmt.Println("Reader Goroutine handle buf err", err)
-			break
+		// 3. 封装请求
+		req := Request{
+			Message: buf,
+			Conn:    conn,
 		}
+		// 4. 处理数据
+		go func(request ziface.IRequest) {
+			conn.Router.PreHandle(request)
+			conn.Router.Handle(request)
+			conn.Router.PostHandle(request)
+		}(&req)
 	}
 }
 
@@ -82,12 +89,12 @@ func (conn *Connection) WriteConn() {
 
 }
 
-func NewConn(connID uint32, conn *net.TCPConn, callBack ziface.HandlerFunc) *Connection {
+func NewConn(connID uint32, conn *net.TCPConn, router ziface.IRouter) *Connection {
 	connection := &Connection{
 		ConnID:   connID,
 		Conn:     conn,
 		isClosed: false,
-		handler:  callBack,
+		Router:   router,
 		ExitChan: make(chan bool, 1),
 	}
 	return connection

@@ -1,7 +1,6 @@
 package znet
 
 import (
-	"errors"
 	"fmt"
 	"neptune-go/src/zinx/ziface"
 	"net"
@@ -16,6 +15,8 @@ type Server struct {
 	IP string
 	// 端口号
 	Port int
+	// 处理器
+	Router ziface.IRouter
 }
 
 // Start 在方法名前声明接受者的方法, 是属于结构体方法
@@ -43,14 +44,14 @@ func (server *Server) Start() {
 		// 3. 阻塞等待客户端的连接
 		var connID uint32 = 0
 		for {
+			connID++
 			connection, err := listener.AcceptTCP()
 			if err != nil {
 				fmt.Println("Accept err", err)
 				continue
 			}
 			// 4. 处理业务逻辑: go 声明方法异步执行 协程
-			go NewConn(connID, connection, CallBack).StartConn()
-			connID++
+			go NewConn(connID, connection, server.Router).StartConn()
 		}
 	}()
 
@@ -70,6 +71,10 @@ func (server *Server) Stop() {
 	// TODO 服务器关闭前释放相应的资源
 }
 
+func (server *Server) AddRouter(router ziface.IRouter) {
+	server.Router = router
+}
+
 // NewServer 1. 返回值是 IServer 2. 在方法名前没有声明接受者的, 属于公共的方法
 func NewServer(name string) ziface.IServer {
 	// 变量的声明
@@ -78,17 +83,8 @@ func NewServer(name string) ziface.IServer {
 		IP:        "0.0.0.0",
 		IPVersion: "tcp4",
 		Port:      8999,
+		Router:    nil,
 	}
 	// 接口方法的入参是指针类型, 就需要传入地址, 所以对象需要取址
 	return server
-}
-
-// CallBack 默认写死的客户端连接处理方法
-func CallBack(conn *net.TCPConn, buf []byte, length int) error {
-	if _, err := conn.Write(buf[0:length]); err != nil {
-		fmt.Println("write back buf err", err)
-		return errors.New("call back err")
-	}
-	fmt.Printf("receive buf %s, length %d\n", buf, length)
-	return nil
 }
