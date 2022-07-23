@@ -6,7 +6,7 @@ import (
 
 func main() {
 	// 1. 创建服务器对象
-	server := znet.NewServer("[ZinxV0.1]")
+	server := znet.NewServer()
 	// 2. 调用服务器方法
 	server.Serve()
 }

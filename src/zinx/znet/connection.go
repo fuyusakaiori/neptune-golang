@@ -2,6 +2,7 @@ package znet
 
 import (
 	"fmt"
+	"neptune-go/src/zinx/utils"
 	"neptune-go/src/zinx/ziface"
 	"net"
 )
@@ -65,7 +66,7 @@ func (conn *Connection) ReadConn() {
 	defer conn.Conn.Close()
 	// 2. 读取数据
 	for {
-		buf := make([]byte, 512)
+		buf := make([]byte, utils.Config.ZinxMaxPackage)
 		_, err := conn.Conn.Read(buf)
 		if err != nil {
 			fmt.Println("Reader Goroutine read buf err", err)
