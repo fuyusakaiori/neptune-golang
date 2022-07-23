@@ -1,8 +1,9 @@
 package znet
 
 import (
+	"errors"
 	"fmt"
-	"neptune-go/src/zinx/utils"
+	"io"
 	"neptune-go/src/zinx/ziface"
 	"net"
 )
@@ -31,6 +32,7 @@ func (conn *Connection) StopConn() {
 	fmt.Println("Conn Stop.. ConnID", conn.ConnID)
 	// 1. 检查连接是否已经关闭
 	if conn.isClosed {
+		fmt.Println("connection already close, ConnID", conn.ConnID)
 		return
 	}
 	// 2. 如果没有关闭, 那么关闭连接
@@ -55,7 +57,21 @@ func (conn *Connection) RemoteAddr() net.Addr {
 	return conn.Conn.RemoteAddr()
 }
 
-func (conn *Connection) Send(data []byte) error {
+func (conn *Connection) SendMessage(id uint32, data []byte) error {
+	// 1. 获取编解码器
+	codec := NewCodec()
+	// 2. 封装消息
+	message := NewMessage(id, data)
+	// 3. 编码
+	buf, err := codec.Encode(message)
+	if err != nil {
+		fmt.Println("[zinx] send encode buf err", err)
+		return err
+	}
+	// 4. 发送数据
+	if _, err := conn.Conn.Write(buf); err != nil {
+		return errors.New("[zinx] send buf err")
+	}
 	return nil
 }
 
@@ -64,17 +80,34 @@ func (conn *Connection) ReadConn() {
 	// 1. 函数退出后释放资源
 	defer fmt.Println("Reader Goroutine is Exit... ConnID", conn.ConnID)
 	defer conn.Conn.Close()
-	// 2. 读取数据
 	for {
-		buf := make([]byte, utils.Config.ZinxMaxPackage)
-		_, err := conn.Conn.Read(buf)
-		if err != nil {
-			fmt.Println("Reader Goroutine read buf err", err)
+		// 2. 获取定长解码器
+		codec := NewCodec()
+		// 3. 读取消息体的头信
+		headBuf := make([]byte, codec.GetHeadLength())
+		if _, err := io.ReadFull(conn.Conn, headBuf); err != nil {
+			fmt.Println("[zinx] read head buf err", err)
 			return
 		}
-		// 3. 封装请求
+		// 4. 解码器
+		message, err := codec.Decode(headBuf)
+		// TODO 暂时没有考虑接收到的消息序列号
+		if err != nil || message.GetMessageID() < 0 {
+			fmt.Println("[zinx] read decode head buf err", err)
+			return
+		}
+		// 5. 读取消息体
+		// TODO 暂时没有考虑解决半包问题
+		dataBuf := make([]byte, message.GetMessageLength())
+		if _, err := io.ReadFull(conn.Conn, dataBuf); err != nil {
+			fmt.Println("[zinx] read decode body buf err", err)
+			return
+		}
+		// 6. 向消息体中填充内容
+		message.SetMessageData(dataBuf)
+		// 7. 封装请求
 		req := Request{
-			Message: buf,
+			Message: message,
 			Conn:    conn,
 		}
 		// 4. 处理数据

@@ -14,6 +14,6 @@ type IConnection interface {
 	GetConnID() uint32
 	// RemoteAddr 获取客户端状态: 连接装填、IP 地址、端口号
 	RemoteAddr() net.Addr
-	// Send 发送数据
-	Send(data []byte) error
+	// SendMessage 发送数据
+	SendMessage(id uint32, data []byte) error
 }
