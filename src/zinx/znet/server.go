@@ -5,6 +5,7 @@ import (
 	"neptune-go/src/zinx/utils"
 	"neptune-go/src/zinx/ziface"
 	"net"
+	"sync"
 )
 
 type Server struct {
@@ -23,6 +24,9 @@ type Server struct {
 	// 钩子函数
 	OnConnStart func(connection ziface.IConnection)
 	OnConnStop  func(connection ziface.IConnection)
+	// 附加参数
+	properties   map[string]interface{}
+	propertyLock sync.RWMutex
 }
 
 // Start 在方法名前声明接受者的方法, 是属于结构体方法
@@ -113,6 +117,34 @@ func (server *Server) SetOnConnStart(onConnStart func(connection ziface.IConnect
 
 func (server *Server) SetOnConnStop(onConnStop func(connection ziface.IConnection)) {
 	server.OnConnStop = onConnStop
+}
+
+func (server *Server) SetServerProperty(key string, value interface{}) {
+	server.propertyLock.Lock()
+	defer server.propertyLock.Unlock()
+	server.properties[key] = value
+}
+
+func (server *Server) GetServerProperty(key string) (value interface{}) {
+	server.propertyLock.RLock()
+	defer server.propertyLock.RUnlock()
+	result, ok := server.properties[key]
+	if !ok {
+		fmt.Println("[zinx] get property doesn't exit")
+		return nil
+	}
+	return result
+}
+
+func (server *Server) RemoveServerProperty(key string) {
+	server.propertyLock.Lock()
+	defer server.propertyLock.Unlock()
+	_, ok := server.properties[key]
+	if !ok {
+		fmt.Println("[zinx] remove property doesn't exit")
+		return
+	}
+	delete(server.properties, key)
 }
 
 // NewServer 1. 返回值是 IServer 2. 在方法名前没有声明接受者的, 属于公共的方法
