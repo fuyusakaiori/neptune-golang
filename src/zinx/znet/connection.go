@@ -1,7 +1,6 @@
 package znet
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"neptune-go/src/zinx/ziface"
@@ -17,8 +16,10 @@ type Connection struct {
 	isClosed bool
 	// 处理器
 	Router ziface.IRouter
-	// TODO 处理布尔值的通道 (goroutine)
+	// TODO 负责交换退出消息的管道 (goroutine)
 	ExitChan chan bool
+	// TODO 负责交换客户端消息的管道
+	MessageChan chan []byte
 }
 
 func (conn *Connection) StartConn() {
@@ -26,6 +27,7 @@ func (conn *Connection) StartConn() {
 	// 1. 执行读取函数
 	go conn.ReadConn()
 	// 2. 执行写入函数
+	go conn.WriteConn()
 }
 
 func (conn *Connection) StopConn() {
@@ -40,8 +42,11 @@ func (conn *Connection) StopConn() {
 	if err := conn.Conn.Close(); err != nil {
 		fmt.Println("Conn Stop err, ConnID", err, conn.ConnID)
 	}
-	// TODO 3. 释放管道资源
+	// 3. 关闭之前发送关闭消息
+	conn.ExitChan <- true
+	// TODO 4. 释放管道资源
 	close(conn.ExitChan)
+	close(conn.MessageChan)
 }
 
 func (conn *Connection) GetTCPConn() *net.TCPConn {
@@ -69,9 +74,7 @@ func (conn *Connection) SendMessage(id uint32, data []byte) error {
 		return err
 	}
 	// 4. 发送数据
-	if _, err := conn.Conn.Write(buf); err != nil {
-		return errors.New("[zinx] send buf err")
-	}
+	conn.MessageChan <- buf
 	return nil
 }
 
@@ -79,7 +82,7 @@ func (conn *Connection) ReadConn() {
 	fmt.Println("Reader Goroutine is Running... ConnID", conn.ConnID)
 	// 1. 函数退出后释放资源
 	defer fmt.Println("Reader Goroutine is Exit... ConnID", conn.ConnID)
-	defer conn.Conn.Close()
+	defer conn.StopConn()
 	for {
 		// 2. 获取定长解码器
 		codec := NewCodec()
@@ -116,16 +119,32 @@ func (conn *Connection) ReadConn() {
 }
 
 func (conn *Connection) WriteConn() {
-
+	fmt.Println("Writer Goroutine is Running... ConnID", conn.ConnID)
+	defer fmt.Println("Writer Goroutine is Exit... ConnID", conn.ConnID)
+	// 1. 循环阻塞读取读通道交付的数据
+	for {
+		select {
+		// 2. 如果收到通道中的消息, 那么就转发个客户端
+		case data := <-conn.MessageChan:
+			if _, err := conn.Conn.Write(data); err != nil {
+				fmt.Println("[zinx] send buf err")
+				return
+			}
+		// 3. 如果收到关闭消息, 那么就直接退出
+		case <-conn.ExitChan:
+			return
+		}
+	}
 }
 
 func NewConn(connID uint32, conn *net.TCPConn, router ziface.IRouter) *Connection {
 	connection := &Connection{
-		ConnID:   connID,
-		Conn:     conn,
-		isClosed: false,
-		Router:   router,
-		ExitChan: make(chan bool, 1),
+		ConnID:      connID,
+		Conn:        conn,
+		isClosed:    false,
+		Router:      router,
+		ExitChan:    make(chan bool, 1),
+		MessageChan: make(chan []byte),
 	}
 	return connection
 }
