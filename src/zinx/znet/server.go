@@ -18,6 +18,11 @@ type Server struct {
 	Port uint32
 	// 路由器
 	Router ziface.IRouter
+	// 连接管理器
+	ConnManager ziface.IConnManager
+	// 钩子函数
+	OnConnStart func(connection ziface.IConnection)
+	OnConnStop  func(connection ziface.IConnection)
 }
 
 // Start 在方法名前声明接受者的方法, 是属于结构体方法
@@ -53,8 +58,14 @@ func (server *Server) Start() {
 				fmt.Println("Accept err", err)
 				continue
 			}
-			// 4. 处理业务逻辑: go 声明方法异步执行 协程
-			go NewConn(connID, connection, server.Router).StartConn()
+			// 4 判断是否已经超过连接上限
+			if server.ConnManager.GetConnectionCount() >= utils.Config.ZinxMaxConn {
+				connection.Close()
+				fmt.Println("[zinx] conn count already up to max ", utils.Config.ZinxMaxConn, ", must close some conn")
+				continue
+			}
+			// 5. 处理业务逻辑: go 声明方法异步执行 协程
+			go NewConn(connID, connection, server.Router, server).StartConn()
 		}
 	}()
 
@@ -71,22 +82,49 @@ func (server *Server) Serve() {
 }
 
 func (server *Server) Stop() {
-	// TODO 服务器关闭前释放相应的资源
+	// 服务器关闭前释放相应的资源
+	server.ConnManager.CloseConnections()
+	fmt.Println("[zinx] server close, will release all connections")
 }
 
 func (server *Server) AddRouter(id uint32, handler ziface.IHandler) {
 	server.Router.AddHandler(id, handler)
 }
 
+func (server *Server) GetConnManager() ziface.IConnManager {
+	return server.ConnManager
+}
+
+func (server *Server) GetOnConnStart(connection ziface.IConnection) {
+	if server.OnConnStart != nil {
+		server.OnConnStart(connection)
+	}
+}
+
+func (server *Server) GetOnConnStop(connection ziface.IConnection) {
+	if server.OnConnStop != nil {
+		server.OnConnStop(connection)
+	}
+}
+
+func (server *Server) SetOnConnStart(onConnStart func(connection ziface.IConnection)) {
+	server.OnConnStart = onConnStart
+}
+
+func (server *Server) SetOnConnStop(onConnStop func(connection ziface.IConnection)) {
+	server.OnConnStop = onConnStop
+}
+
 // NewServer 1. 返回值是 IServer 2. 在方法名前没有声明接受者的, 属于公共的方法
 func NewServer() ziface.IServer {
 	// 变量的声明
 	server := &Server{
-		Name:      utils.Config.Name,
-		IP:        utils.Config.IP,
-		IPVersion: utils.Config.IPVersion,
-		Port:      utils.Config.Port,
-		Router:    NewRouter(),
+		Name:        utils.Config.Name,
+		IP:          utils.Config.IP,
+		IPVersion:   utils.Config.IPVersion,
+		Port:        utils.Config.Port,
+		Router:      NewRouter(),
+		ConnManager: NewConnManager(),
 	}
 	// 接口方法的入参是指针类型, 就需要传入地址, 所以对象需要取址
 	return server

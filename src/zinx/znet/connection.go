@@ -3,6 +3,7 @@ package znet
 import (
 	"fmt"
 	"io"
+	"neptune-go/src/zinx/utils"
 	"neptune-go/src/zinx/ziface"
 	"net"
 )
@@ -20,6 +21,8 @@ type Connection struct {
 	ExitChan chan bool
 	// TODO 负责交换客户端消息的管道
 	MessageChan chan []byte
+	// 连接所属服务器
+	Server ziface.IServer
 }
 
 func (conn *Connection) StartConn() {
@@ -28,6 +31,8 @@ func (conn *Connection) StartConn() {
 	go conn.ReadConn()
 	// 2. 执行写入函数
 	go conn.WriteConn()
+	// 3. 执行回调
+	conn.Server.GetOnConnStart(conn)
 }
 
 func (conn *Connection) StopConn() {
@@ -37,16 +42,20 @@ func (conn *Connection) StopConn() {
 		fmt.Println("connection already close, ConnID", conn.ConnID)
 		return
 	}
-	// 2. 如果没有关闭, 那么关闭连接
+	// 2. 执行回调
+	conn.Server.GetOnConnStop(conn)
+	// 3. 如果没有关闭, 那么关闭连接
 	conn.isClosed = true
 	if err := conn.Conn.Close(); err != nil {
 		fmt.Println("Conn Stop err, ConnID", err, conn.ConnID)
 	}
-	// 3. 关闭之前发送关闭消息
+	// 4. 关闭之前发送关闭消息
 	conn.ExitChan <- true
 	// TODO 4. 释放管道资源
 	close(conn.ExitChan)
 	close(conn.MessageChan)
+	// 5. 移除连接
+	conn.Server.GetConnManager().CloseConnection(conn)
 }
 
 func (conn *Connection) GetTCPConn() *net.TCPConn {
@@ -55,7 +64,7 @@ func (conn *Connection) GetTCPConn() *net.TCPConn {
 }
 
 func (conn *Connection) GetConnID() uint32 {
-	return conn.GetConnID()
+	return conn.ConnID
 }
 
 func (conn *Connection) RemoteAddr() net.Addr {
@@ -137,7 +146,8 @@ func (conn *Connection) WriteConn() {
 	}
 }
 
-func NewConn(connID uint32, conn *net.TCPConn, router ziface.IRouter) *Connection {
+func NewConn(connID uint32, conn *net.TCPConn, router ziface.IRouter, server ziface.IServer) *Connection {
+	// 1. 创建连接
 	connection := &Connection{
 		ConnID:      connID,
 		Conn:        conn,
@@ -145,6 +155,10 @@ func NewConn(connID uint32, conn *net.TCPConn, router ziface.IRouter) *Connectio
 		Router:      router,
 		ExitChan:    make(chan bool, 1),
 		MessageChan: make(chan []byte),
+		Server:      server,
 	}
+	// 2. 添加连接
+	connection.Server.GetConnManager().AddConnection(connection)
+	fmt.Println("now ", connection.Server.GetConnManager().GetConnectionCount(), "limit ", utils.Config.ZinxMaxConn)
 	return connection
 }
