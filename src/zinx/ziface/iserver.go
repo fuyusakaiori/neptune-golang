@@ -8,5 +8,5 @@ type IServer interface {
 	// Stop 停止服务器
 	Stop()
 	// AddRouter 添加处理器
-	AddRouter(router IRouter)
+	AddRouter(id uint32, handler IHandler)
 }

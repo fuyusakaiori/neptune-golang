@@ -16,7 +16,7 @@ type Server struct {
 	IP string
 	// 端口号
 	Port uint32
-	// 处理器
+	// 路由器
 	Router ziface.IRouter
 }
 
@@ -72,8 +72,8 @@ func (server *Server) Stop() {
 	// TODO 服务器关闭前释放相应的资源
 }
 
-func (server *Server) AddRouter(router ziface.IRouter) {
-	server.Router = router
+func (server *Server) AddRouter(id uint32, handler ziface.IHandler) {
+	server.Router.AddHandler(id, handler)
 }
 
 // NewServer 1. 返回值是 IServer 2. 在方法名前没有声明接受者的, 属于公共的方法
@@ -84,7 +84,7 @@ func NewServer() ziface.IServer {
 		IP:        utils.Config.IP,
 		IPVersion: utils.Config.IPVersion,
 		Port:      utils.Config.Port,
-		Router:    nil,
+		Router:    NewRouter(),
 	}
 	// 接口方法的入参是指针类型, 就需要传入地址, 所以对象需要取址
 	return server

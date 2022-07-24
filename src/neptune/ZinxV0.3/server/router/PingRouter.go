@@ -8,7 +8,7 @@ import (
 
 type PingRouter struct {
 	// TODO go 继承?
-	znet.BaseRouter
+	znet.BaseHandler
 }
 
 func (router *PingRouter) PreHandle(request ziface.IRequest) {

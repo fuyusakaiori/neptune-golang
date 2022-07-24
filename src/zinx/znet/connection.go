@@ -111,11 +111,7 @@ func (conn *Connection) ReadConn() {
 			Conn:    conn,
 		}
 		// 4. 处理数据
-		go func(request ziface.IRequest) {
-			conn.Router.PreHandle(request)
-			conn.Router.Handle(request)
-			conn.Router.PostHandle(request)
-		}(&req)
+		go conn.Router.RouterHandler(&req)
 	}
 }
 

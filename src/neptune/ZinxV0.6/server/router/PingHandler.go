@@ -6,12 +6,12 @@ import (
 	"neptune-go/src/zinx/znet"
 )
 
-type PingRouter struct {
+type PingHandler struct {
 	// TODO go 继承?
-	znet.BaseRouter
+	znet.BaseHandler
 }
 
-func (router *PingRouter) Handle(request ziface.IRequest) {
+func (router *PingHandler) Handle(request ziface.IRequest) {
 	fmt.Println("[zinx] ping router handle... ")
 	// 1. 读取消息
 	id := request.GetMessage().GetMessageID()
@@ -19,7 +19,7 @@ func (router *PingRouter) Handle(request ziface.IRequest) {
 	data := request.GetMessage().GetMessageData()
 	fmt.Println("[zinx] ping handler id=", id, "\tlength=", length, "\tdata=", string(data))
 	// 2. 写回消息
-	if err := request.GetConn().SendMessage(id, data); err != nil {
+	if err := request.GetConn().SendMessage(id, []byte("ping handler: "+string(data))); err != nil {
 		fmt.Println("[zinx] ping handler write err", err)
 	}
 }
