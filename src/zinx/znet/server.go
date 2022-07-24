@@ -26,6 +26,8 @@ func (server *Server) Start() {
 	go func() {
 		// 服务器正式启动
 		fmt.Printf("[%s] Server Listener at IP :%s, Port :%d\n", server.Name, server.IP, server.Port)
+		// 0. 启动线程池
+		server.Router.StartWorkerPool()
 		// 1. 获取 TCP 对象
 		addr, err := net.ResolveTCPAddr(server.IPVersion, fmt.Sprintf("%s:%d", server.IP, server.Port))
 		// 错误处理

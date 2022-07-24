@@ -16,9 +16,11 @@ type Configuration struct {
 	Name      string
 
 	// Zinx
-	ZinxVersion    string
-	ZinxMaxConn    uint32
-	ZinxMaxPackage uint32
+	ZinxVersion        string
+	ZinxMaxConn        uint32
+	ZinxMaxPackage     uint32
+	ZinxWorkerPoolSize uint32
+	ZinxTaskQueueSize  uint32
 }
 
 func (config *Configuration) Reload() {
@@ -41,13 +43,15 @@ var Config *Configuration
 func init() {
 	// 1. 执行默认配置
 	Config = &Configuration{
-		Name:           "ZinxServer",
-		IP:             "0.0.0.0",
-		IPVersion:      "tcp4",
-		Port:           8999,
-		ZinxVersion:    "V0.4",
-		ZinxMaxConn:    1000,
-		ZinxMaxPackage: 4096,
+		Name:               "ZinxServer",
+		IP:                 "0.0.0.0",
+		IPVersion:          "tcp4",
+		Port:               8999,
+		ZinxVersion:        "V0.4",
+		ZinxMaxConn:        1000,
+		ZinxMaxPackage:     4096,
+		ZinxWorkerPoolSize: 10,
+		ZinxTaskQueueSize:  100,
 	}
 	// 2. 执行性自定义配置
 	Config.Reload()

@@ -114,7 +114,7 @@ func (conn *Connection) ReadConn() {
 			Conn:    conn,
 		}
 		// 4. 处理数据
-		go conn.Router.RouterHandler(&req)
+		conn.Router.SendMessageToTaskQueue(&req)
 	}
 }
 
