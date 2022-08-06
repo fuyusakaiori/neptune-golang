@@ -6,6 +6,7 @@ import (
 	"neptune-go/src/zinx/utils"
 	"neptune-go/src/zinx/ziface"
 	"net"
+	"sync"
 )
 
 type Connection struct {
@@ -23,6 +24,9 @@ type Connection struct {
 	MessageChan chan []byte
 	// 连接所属服务器
 	Server ziface.IServer
+	// 附加参数
+	properties   map[string]interface{}
+	propertyLock sync.RWMutex
 }
 
 func (conn *Connection) StartConn() {
@@ -144,6 +148,34 @@ func (conn *Connection) WriteConn() {
 			return
 		}
 	}
+}
+
+func (conn *Connection) SetConnectionProperty(key string, value interface{}) {
+	conn.propertyLock.Lock()
+	defer conn.propertyLock.Unlock()
+	conn.properties[key] = value
+}
+
+func (conn *Connection) GetConnectionProperty(key string) (value interface{}) {
+	conn.propertyLock.RLock()
+	defer conn.propertyLock.RUnlock()
+	result, ok := conn.properties[key]
+	if !ok {
+		fmt.Println("[zinx] get property doesn't exit")
+		return nil
+	}
+	return result
+}
+
+func (conn *Connection) RemoveConnectionProperty(key string) {
+	conn.propertyLock.Lock()
+	defer conn.propertyLock.Unlock()
+	_, ok := conn.properties[key]
+	if !ok {
+		fmt.Println("[zinx] remove property doesn't exit")
+		return
+	}
+	delete(conn.properties, key)
 }
 
 func NewConn(connID uint32, conn *net.TCPConn, router ziface.IRouter, server ziface.IServer) *Connection {

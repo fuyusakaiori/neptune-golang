@@ -19,10 +19,4 @@ type IServer interface {
 	SetOnConnStart(func(connection IConnection))
 	// SetOnConnStop 设置关闭的钩子函数
 	SetOnConnStop(func(connection IConnection))
-	// SetServerProperty 设置参数
-	SetServerProperty(key string, value interface{})
-	// GetServerProperty 获取参数
-	GetServerProperty(key string) (value interface{})
-	// RemoveServerProperty 移除参数
-	RemoveServerProperty(key string)
 }
