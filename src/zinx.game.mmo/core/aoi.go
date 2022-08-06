@@ -2,6 +2,15 @@ package core
 
 import "fmt"
 
+const (
+	AoiMinX float32 = 85
+	AoiMaxX float32 = 410
+	AoiCntX int     = 10
+	AoiMinY float32 = 75
+	AoiMaxY float32 = 400
+	AoiCntY int     = 20
+)
+
 // AreaOfInterest 兴趣点地图
 type AreaOfInterest struct {
 	// 地图左边界

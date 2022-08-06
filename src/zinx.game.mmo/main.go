@@ -15,6 +15,8 @@ func OnConnectionCreate(conn ziface.IConnection) {
 	player.SyncPlayerId()
 	// 3. 发送广播消息
 	player.BroadCastStartPosition()
+	// 4. 记录玩家
+	core.WorldObject.AddNewPlayerToWorld(player)
 	fmt.Println("player pid -> : ", player.Pid)
 }
 
