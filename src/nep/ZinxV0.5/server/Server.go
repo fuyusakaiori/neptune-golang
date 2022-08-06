@@ -1,7 +1,7 @@
 package main
 
 import (
-	"neptune-go/src/neptune/ZinxV0.7/server/router"
+	"neptune-go/src/nep/ZinxV0.5/server/router"
 	"neptune-go/src/zinx/znet"
 )
 
@@ -10,6 +10,5 @@ func main() {
 	server := znet.NewServer()
 	// 2. 调用服务器方法
 	server.AddRouter(1, &router.PingHandler{})
-	server.AddRouter(2, &router.HelloHandler{})
 	server.Serve()
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"neptune-go/src/neptune/ZinxV0.6/server/router"
+	"neptune-go/src/nep/ZinxV0.8/server/router"
 	"neptune-go/src/zinx/znet"
 )
 
