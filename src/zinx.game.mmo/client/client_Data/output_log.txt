@@ -1,0 +1,106 @@
+Initialize engine version: 5.4.1f1 (649f48bbbf0f)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 1660 Ti (ID=0x2191)
+    Vendor:   NVIDIA
+    VRAM:     3072 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Google.Protobuf.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Google.Protobuf.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\protobuf-net.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\protobuf-net.dll into Unity Child Domain
+- Completed reload, in  0.065 seconds
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 144Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.611600 ms
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 6718 -> priority: 1 
+  Thread -> id: 68c4 -> priority: 1 
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.575400 ms
+
+Unloading 11 unused Assets to reduce memory usage. Loaded Objects now: 368.
+Total: 0.389200 ms (FindLiveObjects: 0.018500 ms CreateObjectMapping: 0.009600 ms MarkObjects: 0.200400 ms  DeleteObjects: 0.160000 ms)
+
+Parent of RectTransform is being set with parent property. Consider using the SetParent method instead, with the worldPositionStays argument set to false. This will retain local orientation and scale rather than world orientation and scale, which can prevent common UI scaling issues.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Connect: 42.192.84.87:8999
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+PlayerController singleton already created!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Connect Suc
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Initialize engine version: 5.4.1f1 (649f48bbbf0f)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 1660 Ti (ID=0x2191)
+    Vendor:   NVIDIA
+    VRAM:     3072 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Google.Protobuf.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\Google.Protobuf.dll into Unity Child Domain
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\protobuf-net.dll (this message is harmless)
+Loading D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\protobuf-net.dll into Unity Child Domain
+- Completed reload, in  0.074 seconds
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: D:\project\golang\src\neptune-go\src\zinx.game.mmo\client\client_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 144Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.782400 ms
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 200c -> priority: 1 
+  Thread -> id: 4590 -> priority: 1 
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.633800 ms
+
+Unloading 11 unused Assets to reduce memory usage. Loaded Objects now: 368.
+Total: 0.355200 ms (FindLiveObjects: 0.020200 ms CreateObjectMapping: 0.013900 ms MarkObjects: 0.166500 ms  DeleteObjects: 0.154000 ms)
+
+Parent of RectTransform is being set with parent property. Consider using the SetParent method instead, with the worldPositionStays argument set to false. This will retain local orientation and scale rather than world orientation and scale, which can prevent common UI scaling issues.
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Connect: 42.192.84.87:8999
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+PlayerController singleton already created!
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+Connect Suc
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+

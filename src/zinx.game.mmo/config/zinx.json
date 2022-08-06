@@ -1,0 +1,10 @@
+{
+  "Name": "MMO Game Zinx",
+  "IP": "0.0.0.0",
+  "IPVersion": "tcp4",
+  "Port": 8999,
+  "ZinxVersion": "V0.10",
+  "ZinxMaxConn": 20,
+  "ZinxWorkerPoolSize": 20,
+  "ZinxTaskQueueSize": 256
+}
