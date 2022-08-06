@@ -66,6 +66,24 @@ func (player *Player) BroadCastStartPosition() {
 	player.SendMessage(200, message)
 }
 
+// Talk 发送消息给所有的玩家
+func (player *Player) Talk(content string) {
+	// 1. 准备发送的消息
+	message := &pb.BroadCast{
+		Pid: int32(player.Pid),
+		Tp:  1,
+		Data: &pb.BroadCast_Content{
+			Content: content,
+		},
+	}
+	// 2. 获取所有玩家
+	players := WorldObject.GetOnlinePlayers()
+	// 3. 发送消息
+	for _, p := range players {
+		p.SendMessage(200, message)
+	}
+}
+
 // NewPlayer 创建玩家
 func NewPlayer(conn ziface.IConnection) *Player {
 	// 1. 生成玩家 ID

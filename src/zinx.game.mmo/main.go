@@ -2,9 +2,14 @@ package main
 
 import (
 	"fmt"
+	"neptune-go/src/zinx.game.mmo/apis"
 	"neptune-go/src/zinx.game.mmo/core"
 	"neptune-go/src/zinx/ziface"
 	"neptune-go/src/zinx/znet"
+)
+
+const (
+	Pid = "pid"
 )
 
 func OnConnectionCreate(conn ziface.IConnection) {
@@ -17,6 +22,9 @@ func OnConnectionCreate(conn ziface.IConnection) {
 	player.BroadCastStartPosition()
 	// 4. 记录玩家
 	core.WorldObject.AddNewPlayerToWorld(player)
+	// 5. 绑定属性
+	player.Conn.SetConnectionProperty(Pid, player.Pid)
+
 	fmt.Println("player pid -> : ", player.Pid)
 }
 
@@ -26,6 +34,7 @@ func main() {
 	// 2. 注册钩子和销毁函数
 	zinx.SetOnConnStart(OnConnectionCreate)
 	// 3. 注册处理器
+	zinx.AddRouter(2, &apis.WorldChatHandler{})
 	// 4. 启动服务器
 	zinx.Serve()
 
