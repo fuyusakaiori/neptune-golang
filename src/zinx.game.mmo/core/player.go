@@ -84,6 +84,59 @@ func (player *Player) Talk(content string) {
 	}
 }
 
+// SyncSurrounding 将新加入的玩家同步给其他玩家
+func (player *Player) SyncSurrounding() {
+	// 1. 获取周边的玩家 ID
+	pids := WorldObject.aoi.GetSurroundingPlayersByPosition(player.Position.X, player.Position.Z)
+	// 2. 获取周边玩家
+	players := make([]*Player, 0, len(pids))
+	for _, pid := range pids {
+		players = append(players, WorldObject.GetPlayerByPid(pid))
+	}
+	// 3. 发送消息
+	message := &pb.BroadCast{
+		Pid: int32(player.Pid),
+		Tp:  2,
+		Data: &pb.BroadCast_P{
+			P: &pb.Position{
+				X: player.Position.X,
+				Y: player.Position.Y,
+				Z: player.Position.Z,
+				V: player.Position.V,
+			},
+		},
+	}
+	// 4. 发送给周边玩家
+	for _, player := range players {
+		player.SendMessage(200, message)
+	}
+}
+
+func (player *Player) SyncPlayers() {
+	// 1. 获取周边的玩家 ID
+	pids := WorldObject.aoi.GetSurroundingPlayersByPosition(player.Position.X, player.Position.Z)
+	// 2. 获取周边玩家
+	players := make([]*pb.Player, 0, len(pids))
+	for _, pid := range pids {
+		p := WorldObject.GetPlayerByPid(pid)
+		players = append(players, &pb.Player{
+			Pid: int32(p.Pid),
+			P: &pb.Position{
+				X: p.Position.X,
+				Y: p.Position.Y,
+				Z: p.Position.Z,
+				V: p.Position.V,
+			},
+		})
+	}
+	// 3. 准备要发送的消息
+	message := &pb.SyncPlayers{
+		Players: players,
+	}
+	// 4. 发送
+	player.SendMessage(202, message)
+}
+
 // NewPlayer 创建玩家
 func NewPlayer(conn ziface.IConnection) *Player {
 	// 1. 生成玩家 ID
